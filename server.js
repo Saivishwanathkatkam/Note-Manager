@@ -9,15 +9,20 @@ dotenv.config();
 const app = express();
 const PORT = 5000;
 const JWT_SECRET = 'your-secret-key-change-this-in-production';
-const mongodb = process.env.MONGO_DB_CONNECTION_URI;
+const mongodb = process.env.MONGO_DB_CONNECTION_URI || 'mongodb://localhost:27017/notemanager_db';
+const dbName = 'notemanager_db';
 
+console.log(mongodb);
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-console.log('Using MongoDB Connection URI:', mongodb);
+console.log(mongodb.startsWith('mongodb+srv') ? 'Using MongoDB Atlas' : `Using MongoDB URI: ${mongodb}`);
+
 // MongoDB Connection
-mongoose.connect(`mongodb://${mongodb}`)
+mongoose.connect(mongodb, {
+  dbName // if the URI doesn't include a DB, mongoose will use this
+})
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
